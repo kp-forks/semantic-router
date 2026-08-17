@@ -10,15 +10,16 @@ LiteLLM is integrated throughout Semantic Router to provide:
 
 ## LiteLLM-Based Encoders
 
-Many Semantic Router encoders are built on `LiteLLMEncoder`:
-- `NimEncoder` - NVIDIA NIM embeddings
-- Custom LiteLLM encoders
+`LiteLLMEncoder` can be used directly for any LiteLLM-supported model, and is the base
+for custom LiteLLM encoders.
 
-Some encoders no longer use LiteLLM and talk to their provider directly:
+The provider-specific encoders talk to their provider directly rather than through
+LiteLLM:
 - `CohereEncoder` - see [Cohere](cohere.md)
 - `MistralEncoder` - see [Mistral](mistral.md)
 - `VoyageEncoder` - see [Voyage](voyage.md)
 - `JinaEncoder` - see [Jina](jina.md)
+- `NimEncoder` - see [NVIDIA NIM](nvidia.md)
 
 ## Features
 

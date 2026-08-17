@@ -4,15 +4,13 @@ import litellm
 import pytest
 from litellm.types.utils import Embedding
 
-from semantic_router.encoders import (
-    LiteLLMEncoder,
-    NimEncoder,
-)
+from semantic_router.encoders import LiteLLMEncoder
 
-# NOTE: CohereEncoder, MistralEncoder, VoyageEncoder and JinaEncoder are not listed
-# here — they use their provider SDKs directly rather than litellm, so they are
-# covered by tests/unit/encoders/test_cohere.py, test_mistral.py, test_voyage.py and
-# test_jina.py.
+# NOTE: the provider-specific encoders no longer appear here — CohereEncoder,
+# MistralEncoder, VoyageEncoder, JinaEncoder and NimEncoder all talk to their provider
+# directly rather than through litellm, so they are covered by their own modules
+# (test_cohere.py, test_mistral.py, test_voyage.py, test_jina.py, test_nvidia_nim.py).
+# Only the generic LiteLLMEncoder is exercised through this matrix.
 matrix = [
     [
         "openai",
@@ -20,13 +18,6 @@ matrix = [
         "text-embedding-3-small",
         "OPENAI_API_KEY",
         LiteLLMEncoder,
-    ],
-    [
-        "nvidia_nim",
-        "nv-embedqa-e5-v5",
-        "nv-embedqa-e5-v5",
-        "NVIDIA_NIM_API_KEY",
-        NimEncoder,
     ],
 ]
 
