@@ -5,14 +5,14 @@ import pytest
 from litellm.types.utils import Embedding
 
 from semantic_router.encoders import (
-    JinaEncoder,
     LiteLLMEncoder,
     NimEncoder,
 )
 
-# NOTE: CohereEncoder, MistralEncoder and VoyageEncoder are not listed here — they
-# use their provider SDKs directly rather than litellm, so they are covered by
-# tests/unit/encoders/test_cohere.py, test_mistral.py and test_voyage.py.
+# NOTE: CohereEncoder, MistralEncoder, VoyageEncoder and JinaEncoder are not listed
+# here — they use their provider SDKs directly rather than litellm, so they are
+# covered by tests/unit/encoders/test_cohere.py, test_mistral.py, test_voyage.py and
+# test_jina.py.
 matrix = [
     [
         "openai",
@@ -20,13 +20,6 @@ matrix = [
         "text-embedding-3-small",
         "OPENAI_API_KEY",
         LiteLLMEncoder,
-    ],
-    [
-        "jina_ai",
-        "jina-embeddings-v3",
-        "jina-embeddings-v3",
-        "JINA_AI_API_KEY",
-        JinaEncoder,
     ],
     [
         "nvidia_nim",
