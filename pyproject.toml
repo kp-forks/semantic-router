@@ -22,7 +22,8 @@ dependencies = [
     "litellm>=1.83.7",
     "openai>=1.10.0,<3.0.0",
     "cohere>=5.9.4,<6.00",
-    "mistralai>=1.0.0,<2.0.0"
+    "mistralai>=1.0.0,<2.0.0",
+    "voyageai>=0.4.1",
 ]
 
 [project.optional-dependencies]

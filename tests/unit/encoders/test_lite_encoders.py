@@ -8,12 +8,11 @@ from semantic_router.encoders import (
     JinaEncoder,
     LiteLLMEncoder,
     NimEncoder,
-    VoyageEncoder,
 )
 
-# NOTE: CohereEncoder and MistralEncoder are not listed here — they use their
-# provider SDKs directly rather than litellm, so they are covered by
-# tests/unit/encoders/test_cohere.py and tests/unit/encoders/test_mistral.py.
+# NOTE: CohereEncoder, MistralEncoder and VoyageEncoder are not listed here — they
+# use their provider SDKs directly rather than litellm, so they are covered by
+# tests/unit/encoders/test_cohere.py, test_mistral.py and test_voyage.py.
 matrix = [
     [
         "openai",
@@ -28,13 +27,6 @@ matrix = [
         "jina-embeddings-v3",
         "JINA_AI_API_KEY",
         JinaEncoder,
-    ],
-    [
-        "voyage",
-        "voyage-3",
-        "voyage-3",
-        "VOYAGE_API_KEY",
-        VoyageEncoder,
     ],
     [
         "nvidia_nim",

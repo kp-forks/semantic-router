@@ -11,7 +11,6 @@ LiteLLM is integrated throughout Semantic Router to provide:
 ## LiteLLM-Based Encoders
 
 Many Semantic Router encoders are built on `LiteLLMEncoder`:
-- `VoyageEncoder` - Voyage AI embeddings
 - `NimEncoder` - NVIDIA NIM embeddings
 - `JinaEncoder` - Jina AI embeddings
 - Custom LiteLLM encoders
@@ -19,6 +18,7 @@ Many Semantic Router encoders are built on `LiteLLMEncoder`:
 Some encoders no longer use LiteLLM and call their provider SDK directly:
 - `CohereEncoder` - see [Cohere](cohere.md)
 - `MistralEncoder` - see [Mistral](mistral.md)
+- `VoyageEncoder` - see [Voyage](voyage.md)
 
 ## Features
 
