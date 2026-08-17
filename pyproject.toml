@@ -21,7 +21,8 @@ dependencies = [
     # https://www.cve.org/CVERecord?id=CVE-2026-42208 explains >=1.83.7 
     "litellm>=1.83.7",
     "openai>=1.10.0,<3.0.0",
-    "cohere>=5.9.4,<6.00"
+    "cohere>=5.9.4,<6.00",
+    "mistralai>=1.0.0,<2.0.0"
 ]
 
 [project.optional-dependencies]
@@ -40,7 +41,6 @@ vision = [
     "pillow>=10.2.0,<11.0.0 ; python_version < '3.13'",
     "torch>=2.6.0 ; python_version < '3.13'"
 ]
-mistralai = ["mistralai>=1.0.0,<2.0.0"]
 qdrant = ["qdrant-client>=1.11.1,<2"]
 google = ["google-cloud-aiplatform>=1.45.0,<2"]
 bedrock = [
@@ -72,7 +72,6 @@ all = [
     "semantic-router[local]",
     "semantic-router[pinecone]",
     "semantic-router[vision]",
-    "semantic-router[mistralai]",
     "semantic-router[qdrant]",
     "semantic-router[google]",
     "semantic-router[bedrock]",

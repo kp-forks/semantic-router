@@ -12,13 +12,13 @@ LiteLLM is integrated throughout Semantic Router to provide:
 
 Many Semantic Router encoders are built on `LiteLLMEncoder`:
 - `VoyageEncoder` - Voyage AI embeddings
-- `MistralEncoder` - Mistral AI embeddings
 - `NimEncoder` - NVIDIA NIM embeddings
 - `JinaEncoder` - Jina AI embeddings
 - Custom LiteLLM encoders
 
-Note that `CohereEncoder` no longer uses LiteLLM — it calls the Cohere SDK directly. See
-[Cohere](cohere.md).
+Some encoders no longer use LiteLLM and call their provider SDK directly:
+- `CohereEncoder` - see [Cohere](cohere.md)
+- `MistralEncoder` - see [Mistral](mistral.md)
 
 ## Features
 
