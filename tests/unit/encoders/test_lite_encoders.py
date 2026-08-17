@@ -5,7 +5,6 @@ import pytest
 from litellm.types.utils import Embedding
 
 from semantic_router.encoders import (
-    CohereEncoder,
     JinaEncoder,
     LiteLLMEncoder,
     MistralEncoder,
@@ -13,6 +12,8 @@ from semantic_router.encoders import (
     VoyageEncoder,
 )
 
+# NOTE: CohereEncoder is not listed here — it uses the Cohere SDK directly rather
+# than litellm, so it is covered by tests/unit/encoders/test_cohere.py.
 matrix = [
     [
         "openai",
@@ -20,13 +21,6 @@ matrix = [
         "text-embedding-3-small",
         "OPENAI_API_KEY",
         LiteLLMEncoder,
-    ],
-    [
-        "cohere",
-        "embed-english-v3.0",
-        "embed-english-v3.0",
-        "COHERE_API_KEY",
-        CohereEncoder,
     ],
     [
         "mistral",

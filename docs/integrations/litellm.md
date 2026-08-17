@@ -11,12 +11,14 @@ LiteLLM is integrated throughout Semantic Router to provide:
 ## LiteLLM-Based Encoders
 
 Many Semantic Router encoders are built on `LiteLLMEncoder`:
-- `CohereEncoder` - Cohere embeddings
 - `VoyageEncoder` - Voyage AI embeddings
 - `MistralEncoder` - Mistral AI embeddings
 - `NimEncoder` - NVIDIA NIM embeddings
 - `JinaEncoder` - Jina AI embeddings
 - Custom LiteLLM encoders
+
+Note that `CohereEncoder` no longer uses LiteLLM — it calls the Cohere SDK directly. See
+[Cohere](cohere.md).
 
 ## Features
 
@@ -25,9 +27,9 @@ Many Semantic Router encoders are built on `LiteLLMEncoder`:
 All LiteLLM-based encoders share a consistent interface:
 
 ```python
-from semantic_router.encoders import CohereEncoder
+from semantic_router.encoders import JinaEncoder
 
-encoder = CohereEncoder(name="embed-english-v3.0", score_threshold=0.3)
+encoder = JinaEncoder(name="jina-embeddings-v3", score_threshold=0.4)
 embeddings = encoder(["your text here"])
 ```
 
@@ -118,12 +120,12 @@ LiteLLM respects standard provider environment variables:
 ## Example Usage
 
 ```python
-from semantic_router.encoders import CohereEncoder
+from semantic_router.encoders import JinaEncoder
 from semantic_router.routers import SemanticRouter
 from semantic_router.route import Route
 
 # LiteLLM-based encoder with cost tracking
-encoder = CohereEncoder(name="embed-english-v3.0", score_threshold=0.3)
+encoder = JinaEncoder(name="jina-embeddings-v3", score_threshold=0.4)
 
 routes = [
     Route(name="greeting", utterances=["hello", "hi"]),
