@@ -112,16 +112,17 @@ class TestNimEncoderInit:
 
 
 class TestNimEncoderSync:
-    def test_encode_queries(self, encoder, mock_nim):
+    def test_encode_queries_uses_query_input_type(self, encoder, mock_nim):
+        """nv-embedqa models are asymmetric: queries must not be sent as passages."""
         sync_client, _, _, _ = mock_nim
         assert encoder.encode_queries(["test"]) == [[0.1, 0.2, 0.3]]
         sync_client.embeddings.create.assert_called_once_with(
             input=["test"],
             model="nvidia/nv-embedqa-e5-v5",
-            extra_body={"input_type": "passage"},
+            extra_body={"input_type": "query"},
         )
 
-    def test_encode_documents(self, encoder, mock_nim):
+    def test_encode_documents_uses_passage_input_type(self, encoder, mock_nim):
         sync_client, _, _, _ = mock_nim
         assert encoder.encode_documents(["test"]) == [[0.1, 0.2, 0.3]]
         sync_client.embeddings.create.assert_called_once_with(
@@ -130,10 +131,24 @@ class TestNimEncoderSync:
             extra_body={"input_type": "passage"},
         )
 
+    def test_queries_and_documents_differ(self, encoder, mock_nim):
+        """Guard the asymmetry itself, not just each side in isolation."""
+        sync_client, _, _, _ = mock_nim
+        encoder.encode_queries(["test"])
+        encoder.encode_documents(["test"])
+        input_types = [
+            call.kwargs["extra_body"]["input_type"]
+            for call in sync_client.embeddings.create.call_args_list
+        ]
+        assert input_types == ["query", "passage"]
+
     def test_call_delegates_to_encode_queries(self, encoder, mock_nim):
         sync_client, _, _, _ = mock_nim
         assert encoder(["test"]) == [[0.1, 0.2, 0.3]]
-        sync_client.embeddings.create.assert_called_once()
+        assert (
+            sync_client.embeddings.create.call_args.kwargs["extra_body"]["input_type"]
+            == "query"
+        )
 
     def test_handles_multiple_inputs_correctly(self, encoder, mock_nim):
         sync_client, _, _, _ = mock_nim
@@ -156,13 +171,13 @@ class TestNimEncoderSync:
         sync_client, _, _, _ = mock_nim
         encoder.encode_queries(["test"], extra_body={"truncate": "END"})
         assert sync_client.embeddings.create.call_args.kwargs["extra_body"] == {
-            "input_type": "passage",
+            "input_type": "query",
             "truncate": "END",
         }
 
     def test_extra_body_can_override_input_type(self, encoder, mock_nim):
         sync_client, _, _, _ = mock_nim
-        encoder.encode_queries(["test"], extra_body={"input_type": "query"})
+        encoder.encode_documents(["test"], extra_body={"input_type": "query"})
         assert sync_client.embeddings.create.call_args.kwargs["extra_body"] == {
             "input_type": "query"
         }
@@ -182,9 +197,19 @@ class TestNimEncoderSync:
 
 class TestNimEncoderAsync:
     @pytest.mark.asyncio
-    async def test_aencode_queries(self, encoder, mock_nim):
+    async def test_aencode_queries_uses_query_input_type(self, encoder, mock_nim):
         _, async_client, _, _ = mock_nim
         assert await encoder.aencode_queries(["test"]) == [[0.1, 0.2, 0.3]]
+        async_client.embeddings.create.assert_awaited_once_with(
+            input=["test"],
+            model="nvidia/nv-embedqa-e5-v5",
+            extra_body={"input_type": "query"},
+        )
+
+    @pytest.mark.asyncio
+    async def test_aencode_documents_uses_passage_input_type(self, encoder, mock_nim):
+        _, async_client, _, _ = mock_nim
+        assert await encoder.aencode_documents(["test"]) == [[0.1, 0.2, 0.3]]
         async_client.embeddings.create.assert_awaited_once_with(
             input=["test"],
             model="nvidia/nv-embedqa-e5-v5",
@@ -192,16 +217,13 @@ class TestNimEncoderAsync:
         )
 
     @pytest.mark.asyncio
-    async def test_aencode_documents(self, encoder, mock_nim):
-        _, async_client, _, _ = mock_nim
-        assert await encoder.aencode_documents(["test"]) == [[0.1, 0.2, 0.3]]
-        assert async_client.embeddings.create.call_args.kwargs["input"] == ["test"]
-
-    @pytest.mark.asyncio
     async def test_acall_delegates_to_aencode_queries(self, encoder, mock_nim):
         _, async_client, _, _ = mock_nim
         assert await encoder.acall(["test"]) == [[0.1, 0.2, 0.3]]
-        async_client.embeddings.create.assert_awaited_once()
+        assert (
+            async_client.embeddings.create.call_args.kwargs["extra_body"]["input_type"]
+            == "query"
+        )
 
     @pytest.mark.asyncio
     async def test_handles_multiple_inputs_correctly(self, encoder, mock_nim):

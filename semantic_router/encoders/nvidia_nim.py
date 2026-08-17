@@ -33,6 +33,10 @@ class NimEncoder(DenseEncoder, AsymmetricDenseMixin):
     NVIDIA NIM exposes an OpenAI-compatible embeddings endpoint, so this encoder drives
     it with the OpenAI SDK pointed at ``https://integrate.api.nvidia.com/v1`` rather than
     depending on LiteLLM. Point ``base_url`` at your own host to use a self-hosted NIM.
+
+    NVIDIA's ``nv-embedqa`` models are asymmetric: queries must be embedded with
+    ``input_type="query"`` and stored documents with ``input_type="passage"``, so
+    :meth:`encode_queries` and :meth:`encode_documents` differ accordingly.
     """
 
     _client: Any = PrivateAttr()
@@ -99,28 +103,32 @@ class NimEncoder(DenseEncoder, AsymmetricDenseMixin):
         return await self.aencode_queries(docs, **kwargs)
 
     @staticmethod
-    def _extra_body(kwargs: dict) -> dict:
+    def _extra_body(input_type: str, kwargs: dict) -> dict:
         """Build the NIM-specific ``extra_body``, letting callers override defaults.
 
         ``input_type`` is not an OpenAI parameter, so NIM expects it in ``extra_body``.
 
+        :param input_type: The NIM input type, either "query" or "passage".
+        :type input_type: str
         :param kwargs: The keyword arguments passed to an encode method. Any
             ``extra_body`` entry is removed and merged over the defaults.
         :type kwargs: dict
         :return: The body to send alongside the OpenAI parameters.
         :rtype: dict
         """
-        return {"input_type": "passage", **kwargs.pop("extra_body", {})}
+        return {"input_type": input_type, **kwargs.pop("extra_body", {})}
 
-    def _embed(self, docs: list[str], **kwargs) -> list[list[float]]:
+    def _embed(self, docs: list[str], input_type: str, **kwargs) -> list[list[float]]:
         """Embed documents, sending NIM's ``input_type`` through ``extra_body``.
 
         :param docs: The documents to embed.
         :type docs: list[str]
+        :param input_type: The NIM input type, either "query" or "passage".
+        :type input_type: str
         :return: One embedding per document.
         :rtype: list[list[float]]
         """
-        extra_body = self._extra_body(kwargs)
+        extra_body = self._extra_body(input_type, kwargs)
         try:
             embeds = self._client.embeddings.create(
                 input=docs,
@@ -132,15 +140,19 @@ class NimEncoder(DenseEncoder, AsymmetricDenseMixin):
         except Exception as e:
             raise ValueError(f"Nim API call failed. Error: {e}") from e
 
-    async def _aembed(self, docs: list[str], **kwargs) -> list[list[float]]:
+    async def _aembed(
+        self, docs: list[str], input_type: str, **kwargs
+    ) -> list[list[float]]:
         """Async version of :meth:`_embed`.
 
         :param docs: The documents to embed.
         :type docs: list[str]
+        :param input_type: The NIM input type, either "query" or "passage".
+        :type input_type: str
         :return: One embedding per document.
         :rtype: list[list[float]]
         """
-        extra_body = self._extra_body(kwargs)
+        extra_body = self._extra_body(input_type, kwargs)
         try:
             embeds = await self._async_client.embeddings.create(
                 input=docs,
@@ -153,13 +165,13 @@ class NimEncoder(DenseEncoder, AsymmetricDenseMixin):
             raise ValueError(f"Nim API call failed. Error: {e}") from e
 
     def encode_queries(self, docs: list[str], **kwargs) -> list[list[float]]:
-        return self._embed(docs, **kwargs)
+        return self._embed(docs, input_type="query", **kwargs)
 
     def encode_documents(self, docs: list[str], **kwargs) -> list[list[float]]:
-        return self._embed(docs, **kwargs)
+        return self._embed(docs, input_type="passage", **kwargs)
 
     async def aencode_queries(self, docs: list[str], **kwargs) -> list[list[float]]:
-        return await self._aembed(docs, **kwargs)
+        return await self._aembed(docs, input_type="query", **kwargs)
 
     async def aencode_documents(self, docs: list[str], **kwargs) -> list[list[float]]:
-        return await self._aembed(docs, **kwargs)
+        return await self._aembed(docs, input_type="passage", **kwargs)

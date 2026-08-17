@@ -92,8 +92,16 @@ embeddings = encoder.encode_queries(
 )
 ```
 
-The encoder sends `input_type="passage"` by default; anything you supply in `extra_body`
-is merged over that default, so `extra_body={"input_type": "query"}` overrides it.
+### Input Types
+
+NVIDIA's `nv-embedqa` models are asymmetric — they expect a different `input_type` for
+search queries than for the documents being searched. The encoder picks the right one for
+you:
+- `passage` - used by `encode_documents()`, for indexing route utterances
+- `query` - used by `encode_queries()`, `__call__()` and `acall()`, for incoming queries
+
+Anything you supply in `extra_body` is merged over that default, so
+`extra_body={"input_type": "passage"}` will override it if you need to.
 
 ## Integration with Routers
 
