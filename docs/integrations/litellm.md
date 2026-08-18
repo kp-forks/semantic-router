@@ -24,15 +24,21 @@ When installed, LiteLLM provides:
 
 Most providers can be reached two ways, and the choice is a real trade-off.
 
-The **native encoders** call their provider's own SDK or REST API. They need no extra dependency, but they also get none of LiteLLM's cross-provider machinery — in particular **they do not report cost or token usage**:
+The **native encoders** below call their provider's own SDK or REST API. They need no extra dependency, but they also get none of LiteLLM's cross-provider machinery — in particular **they do not report cost or token usage**. Every provider in this table is also reachable through LiteLLM, so for these the choice is yours:
 
 | Encoder | Provider docs |
 | --- | --- |
+| `AzureOpenAIEncoder` | — |
+| `BedrockEncoder` | [AWS Bedrock](bedrock.md) |
 | `CohereEncoder` | [Cohere](cohere.md) |
-| `MistralEncoder` | [Mistral](mistral.md) |
-| `VoyageEncoder` | [Voyage](voyage.md) |
+| `GoogleEncoder` | [Google notebook](../encoders/google.ipynb) |
 | `JinaEncoder` | [Jina](jina.md) |
+| `MistralEncoder` | [Mistral](mistral.md) |
 | `NimEncoder` | [NVIDIA NIM](nvidia.md) |
+| `OpenAIEncoder` | [OpenAI](openai.md) |
+| `VoyageEncoder` | [Voyage](voyage.md) |
+
+The remaining encoders — the local, sparse and self-hosted ones such as `BM25Encoder`, `HuggingFaceEncoder`, `LocalEncoder`, `OllamaEncoder` and `TfidfEncoder` — have no LiteLLM route, so this trade-off does not apply to them.
 
 `LiteLLMEncoder` is the only encoder that requires the `litellm` extra, and the only one that gives you cost tracking.
 
@@ -54,9 +60,7 @@ encoder = LiteLLMEncoder(
 embeddings = encoder(["your text here"])
 ```
 
-The same pattern applies to the other providers — use `cohere/`, `mistral/`, `voyage/` or
-`nvidia_nim/` as the prefix. Note that the model name for `LiteLLMEncoder` always carries
-this prefix, whereas the native encoders take a bare model name.
+The same pattern applies to the other providers — the prefixes are `azure/`, `bedrock/`, `cohere/`, `mistral/`, `nvidia_nim/`, `openai/`, `vertex_ai/` and `voyage/`. Note that the model name for `LiteLLMEncoder` always carries this prefix, whereas the native encoders take a bare model name.
 
 Two caveats when switching:
 
