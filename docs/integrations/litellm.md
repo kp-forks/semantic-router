@@ -1,5 +1,4 @@
-Semantic Router can use LiteLLM to reach 100+ LLM providers through a single interface,
-with built-in cost tracking and error handling.
+Semantic Router can use [LiteLLM](https://github.com/BerriAI/litellm) to reach 100+ LLM providers through a single interface, with built-in cost tracking and error handling.
 
 ## Installation
 
@@ -21,31 +20,50 @@ When installed, LiteLLM provides:
 - Standardized error handling and retries
 - Support for both synchronous and asynchronous operations
 
-## LiteLLM-Based Encoders
+## Native Encoders or LiteLLM?
 
-`LiteLLMEncoder` can be used directly for any LiteLLM-supported model, and is the base
-for custom LiteLLM encoders. It is the only encoder that requires the `litellm` extra.
+Most providers can be reached two ways, and the choice is a real trade-off.
 
-The provider-specific encoders talk to their provider directly rather than through
-LiteLLM, and need no extra:
-- `CohereEncoder` - see [Cohere](cohere.md)
-- `MistralEncoder` - see [Mistral](mistral.md)
-- `VoyageEncoder` - see [Voyage](voyage.md)
-- `JinaEncoder` - see [Jina](jina.md)
-- `NimEncoder` - see [NVIDIA NIM](nvidia.md)
+The **native encoders** call their provider's own SDK or REST API. They need no extra dependency, but they also get none of LiteLLM's cross-provider machinery — in particular **they do not report cost or token usage**:
 
-## Features
+| Encoder | Provider docs |
+| --- | --- |
+| `CohereEncoder` | [Cohere](cohere.md) |
+| `MistralEncoder` | [Mistral](mistral.md) |
+| `VoyageEncoder` | [Voyage](voyage.md) |
+| `JinaEncoder` | [Jina](jina.md) |
+| `NimEncoder` | [NVIDIA NIM](nvidia.md) |
 
-### Unified Interface
+`LiteLLMEncoder` is the only encoder that requires the `litellm` extra, and the only one that gives you cost tracking.
 
-All LiteLLM-based encoders share a consistent interface:
+### Reaching the Same Provider Through LiteLLM
+
+If you want cost tracking for one of the providers above, you do not have to give up that provider — configure its credentials for LiteLLM and use `LiteLLMEncoder` with the provider-prefixed model name instead of the native encoder.
+
+For example, Jina embeddings via LiteLLM rather than via `JinaEncoder`:
 
 ```python
-from semantic_router.encoders import JinaEncoder
+from semantic_router.encoders import LiteLLMEncoder
 
-encoder = JinaEncoder(name="jina-embeddings-v3", score_threshold=0.4)
+# LiteLLM names models as "<provider>/<model>"; Jina's provider id is "jina_ai"
+encoder = LiteLLMEncoder(
+    name="jina_ai/jina-embeddings-v3",
+    api_key="your-jina-api-key",  # or set JINA_AI_API_KEY
+    score_threshold=0.4,
+)
 embeddings = encoder(["your text here"])
 ```
+
+The same pattern applies to the other providers — use `cohere/`, `mistral/`, `voyage/` or
+`nvidia_nim/` as the prefix. Note that the model name for `LiteLLMEncoder` always carries
+this prefix, whereas the native encoders take a bare model name.
+
+Two caveats when switching:
+
+- Embeddings are not guaranteed to be byte-identical between the two routes, so re-index your routes rather than mixing vectors produced by both.
+- The native encoders expose provider-specific options the LiteLLM route may not, such as Jina's `task` or NIM's `input_type`.
+
+## Features
 
 ### Cost Tracking
 
@@ -70,25 +88,27 @@ LiteLLM provides access to 100+ providers including:
 - Anthropic, Google
 - Cohere, Mistral
 - AWS Bedrock, Vertex AI
-- And many more
+- And many more see: https://docs.litellm.ai/docs/providers
 
 ## Direct LiteLLM Usage
 
-You can also use `LiteLLMEncoder` directly for any LiteLLM-supported model:
+`LiteLLMEncoder` works with any LiteLLM-supported embedding model:
 
 ```python
 from semantic_router.encoders import LiteLLMEncoder
 
-# Use any LiteLLM-supported model
+# names must be "<provider>/<model>" - a bare model name raises a ValueError
 encoder = LiteLLMEncoder(
-    name="text-embedding-ada-002",  # or any litellm model name
+    name="openai/text-embedding-ada-002",
     score_threshold=0.4
 )
 ```
 
+The API key is taken from the `api_key` argument, or from `<PROVIDER>_API_KEY` in the environment — `OPENAI_API_KEY` for the example above.
+
 ## Integration with Routers
 
-All LiteLLM-based encoders work seamlessly with Semantic Router:
+`LiteLLMEncoder` plugs into a router like any other encoder:
 
 ```python
 from semantic_router.routers import SemanticRouter
@@ -124,22 +144,28 @@ router = SemanticRouter(
 
 ## Environment Variables
 
-LiteLLM respects standard provider environment variables:
-- `OPENAI_API_KEY` - OpenAI models
-- `COHERE_API_KEY` - Cohere models
-- `MISTRAL_API_KEY` - Mistral models
-- `VOYAGE_API_KEY` - Voyage models
+`LiteLLMEncoder` reads `<PROVIDER>_API_KEY`, where the provider is the prefix of the model
+name:
+- `OPENAI_API_KEY` - `openai/...` models
+- `COHERE_API_KEY` - `cohere/...` models
+- `MISTRAL_API_KEY` - `mistral/...` models
+- `VOYAGE_API_KEY` - `voyage/...` models
+- `JINA_AI_API_KEY` - `jina_ai/...` models
+- `NVIDIA_NIM_API_KEY` - `nvidia_nim/...` models
 - And more...
+
+These are LiteLLM's own variable names. A native encoder may accept a different one — for
+instance `JinaEncoder` also reads `JINA_API_KEY`.
 
 ## Example Usage
 
 ```python
-from semantic_router.encoders import JinaEncoder
+from semantic_router.encoders import LiteLLMEncoder
 from semantic_router.routers import SemanticRouter
 from semantic_router.route import Route
 
-# LiteLLM-based encoder with cost tracking
-encoder = JinaEncoder(name="jina-embeddings-v3", score_threshold=0.4)
+# routed through LiteLLM, so requests are cost-tracked
+encoder = LiteLLMEncoder(name="openai/text-embedding-3-small", score_threshold=0.3)
 
 routes = [
     Route(name="greeting", utterances=["hello", "hi"]),
