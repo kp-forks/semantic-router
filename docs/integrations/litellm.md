@@ -1,8 +1,21 @@
-Semantic Router uses LiteLLM as the foundation for many encoder integrations, providing unified access to 100+ LLM providers with built-in cost tracking and error handling.
+Semantic Router can use LiteLLM to reach 100+ LLM providers through a single interface,
+with built-in cost tracking and error handling.
+
+## Installation
+
+LiteLLM is an **optional** dependency. Install it with the `litellm` extra:
+
+```bash
+pip install "semantic-router[litellm]"
+```
+
+Without it, `semantic_router` imports and every provider-specific encoder works as
+normal, but constructing a `LiteLLMEncoder` raises an `ImportError` telling you to
+install the extra.
 
 ## Overview
 
-LiteLLM is integrated throughout Semantic Router to provide:
+When installed, LiteLLM provides:
 - Unified interface to multiple embedding providers
 - Automatic cost tracking and token counting
 - Standardized error handling and retries
@@ -11,10 +24,10 @@ LiteLLM is integrated throughout Semantic Router to provide:
 ## LiteLLM-Based Encoders
 
 `LiteLLMEncoder` can be used directly for any LiteLLM-supported model, and is the base
-for custom LiteLLM encoders.
+for custom LiteLLM encoders. It is the only encoder that requires the `litellm` extra.
 
 The provider-specific encoders talk to their provider directly rather than through
-LiteLLM:
+LiteLLM, and need no extra:
 - `CohereEncoder` - see [Cohere](cohere.md)
 - `MistralEncoder` - see [Mistral](mistral.md)
 - `VoyageEncoder` - see [Voyage](voyage.md)

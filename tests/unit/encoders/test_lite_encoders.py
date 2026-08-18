@@ -1,10 +1,14 @@
 import os
 
-import litellm
 import pytest
-from litellm.types.utils import Embedding
 
-from semantic_router.encoders import LiteLLMEncoder
+# litellm is an optional extra, so skip rather than break collection without it
+pytest.importorskip("litellm")
+
+import litellm  # noqa: E402
+from litellm.types.utils import Embedding  # noqa: E402
+
+from semantic_router.encoders import LiteLLMEncoder  # noqa: E402
 
 # NOTE: the provider-specific encoders no longer appear here — CohereEncoder,
 # MistralEncoder, VoyageEncoder, JinaEncoder and NimEncoder all talk to their provider

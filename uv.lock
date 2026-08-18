@@ -7953,8 +7953,6 @@ dependencies = [
     { name = "cohere" },
     { name = "colorama" },
     { name = "colorlog" },
-    { name = "litellm", version = "1.83.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "litellm", version = "1.95.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "mistralai", version = "1.10.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "mistralai", version = "1.12.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -7987,6 +7985,8 @@ all = [
     { name = "google-cloud-aiplatform", version = "1.148.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "google-cloud-aiplatform", version = "1.163.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "ipykernel" },
+    { name = "litellm", version = "1.83.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "litellm", version = "1.95.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "llama-cpp-python", marker = "python_full_version < '3.13'" },
     { name = "mypy", version = "1.19.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "mypy", version = "1.20.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -8033,6 +8033,8 @@ bedrock = [
 dev = [
     { name = "dagger-io", marker = "python_full_version >= '3.11'" },
     { name = "ipykernel" },
+    { name = "litellm", version = "1.83.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "litellm", version = "1.95.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "mypy", version = "1.19.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "mypy", version = "1.20.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "pytest" },
@@ -8059,6 +8061,10 @@ fastembed = [
 google = [
     { name = "google-cloud-aiplatform", version = "1.148.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "google-cloud-aiplatform", version = "1.163.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+]
+litellm = [
+    { name = "litellm", version = "1.83.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "litellm", version = "1.95.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
 local = [
     { name = "llama-cpp-python", marker = "python_full_version < '3.13'" },
@@ -8111,7 +8117,7 @@ requires-dist = [
     { name = "fastembed", marker = "python_full_version < '3.13' and extra == 'fastembed'", specifier = ">=0.3.0,<0.4" },
     { name = "google-cloud-aiplatform", marker = "extra == 'google'", specifier = ">=1.45.0,<2" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.25.0,<7" },
-    { name = "litellm", specifier = ">=1.83.7" },
+    { name = "litellm", marker = "extra == 'litellm'", specifier = ">=1.83.7" },
     { name = "llama-cpp-python", marker = "python_full_version < '3.13' and extra == 'local'", specifier = ">=0.2.28,<0.2.86" },
     { name = "mistralai", specifier = ">=1.0.0,<2.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.7.1,<2" },
@@ -8140,6 +8146,8 @@ requires-dist = [
     { name = "semantic-router", extras = ["dev"], marker = "extra == 'all'" },
     { name = "semantic-router", extras = ["fastembed"], marker = "extra == 'all'" },
     { name = "semantic-router", extras = ["google"], marker = "extra == 'all'" },
+    { name = "semantic-router", extras = ["litellm"], marker = "extra == 'all'" },
+    { name = "semantic-router", extras = ["litellm"], marker = "extra == 'dev'" },
     { name = "semantic-router", extras = ["local"], marker = "extra == 'all'" },
     { name = "semantic-router", extras = ["ollama"], marker = "extra == 'all'" },
     { name = "semantic-router", extras = ["pinecone"], marker = "extra == 'all'" },
@@ -8160,7 +8168,7 @@ requires-dist = [
     { name = "urllib3", specifier = ">=1.26,<3" },
     { name = "voyageai", specifier = ">=0.4.1" },
 ]
-provides-extras = ["ollama", "local", "pinecone", "vision", "qdrant", "google", "bedrock", "postgres", "fastembed", "docs", "dev", "all"]
+provides-extras = ["litellm", "ollama", "local", "pinecone", "vision", "qdrant", "google", "bedrock", "postgres", "fastembed", "docs", "dev", "all"]
 
 [[package]]
 name = "sentence-transformers"
